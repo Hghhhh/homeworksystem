@@ -13,13 +13,9 @@ public class Homework {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "requestId")
-    private HomeworkRequest homeworkRequest;
+    private Integer requestId;
 
-    @ManyToOne
-    @JoinColumn(name = "studentId")
-    private User student;
+    private String studentId;
 
     @Column(columnDefinition = "text")
     private String content;
@@ -33,6 +29,10 @@ public class Homework {
      */
     @Column(columnDefinition = "tinyint")
     private Integer state;
+
+    private Integer createTime;
+
+    private Integer updateTime;
 
 }
 

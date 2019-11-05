@@ -8,7 +8,7 @@ public class TimeUtil {
 
     public static String unixTimeToDate(Integer time){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Date date = new Date(time);
+        Date date = new Date((long)time*1000);
         String t = simpleDateFormat.format(date);
         return t;
     }
@@ -88,7 +88,7 @@ public class TimeUtil {
     }
 
     public static Integer getBeginUnixTimeOfWeek(){
-        return (int)getBeginDayOfWeek().getTime()/1000;
+        return (int)(getBeginDayOfWeek().getTime()/1000);
     }
 
     // 获取本周的结束时间
@@ -101,7 +101,7 @@ public class TimeUtil {
     }
 
     public static Integer getEndUnixTimeOfWeek(){
-        return (int)getEndDayOfWeek().getTime()/1000;
+        return (int)(getEndDayOfWeek().getTime()/1000);
     }
 
     // 获取上周的开始时间

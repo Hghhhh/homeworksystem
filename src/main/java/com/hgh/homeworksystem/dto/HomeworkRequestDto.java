@@ -19,8 +19,8 @@ public class HomeworkRequestDto {
         this.content = homeworkRequest.getContent();
         this.format = homeworkRequest.getFormat();
         this.enclosure = homeworkRequest.getEnclosure();
-        this.deadline = TimeUtil.unixTimeToDate(homeworkRequest.getDeadline());
-        this.createTime = TimeUtil.unixTimeToDate(homeworkRequest.getCreateTime());
+        this.deadline = homeworkRequest.getDeadline();
+        this.createTime = homeworkRequest.getCreateTime();
         this.state = homeworkRequest.getState();
     }
 
@@ -38,9 +38,9 @@ public class HomeworkRequestDto {
 
     private User teacher;
 
-    private String deadline;
+    private Integer deadline;
 
-    private String createTime;
+    private Integer createTime;
 
     private Integer state;
 

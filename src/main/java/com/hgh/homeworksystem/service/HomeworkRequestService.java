@@ -12,4 +12,12 @@ public interface HomeworkRequestService {
     HomeworkRequestDto getHomeworkRequestById(Integer id);
 
     List<HomeworkRequestDto> getLastestWeekHWRByTeacherId(String teacherId);
+
+    List<HomeworkRequestDto> getAllHWRByTeacherId(String teacherId);
+
+    List<HomeworkRequestDto> getLastestWeekHWRByClassId(Integer classId);
+
+    List<HomeworkRequestDto> getAllHWRByClassId(Integer classId);
+
+
 }

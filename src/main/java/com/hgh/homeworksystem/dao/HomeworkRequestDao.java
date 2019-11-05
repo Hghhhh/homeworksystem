@@ -9,4 +9,10 @@ public interface HomeworkRequestDao extends JpaRepository<HomeworkRequest, Integ
 
 
     List<HomeworkRequest> findByTeacherIdAndCreateTimeBetween(String teacher,Integer begin,Integer end);
+
+    List<HomeworkRequest> findByTeacherIdOrderByCreateTimeDesc(String teacher);
+
+    List<HomeworkRequest> findByClassIdAndCreateTimeBetween(Integer classId, Integer begin,Integer end);
+
+    List<HomeworkRequest> findByClassIdOrderByCreateTimeDesc(Integer classId);
 }

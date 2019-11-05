@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 作业题目controller
+ */
 @RestController
 public class HomeworkRequestController {
 
@@ -30,10 +33,24 @@ public class HomeworkRequestController {
         return Result.success(homeworkRequestDto);
     }
 
-    @GetMapping("lastestWeekHomeworkRequestByTeacher")
-    public Result<List<HomeworkRequestDto>> getHomeRequestsByTeacherId(@PathVariable String teacherId){
-
+    @GetMapping("lastestWeekHomeworkRequestByTeacher/{teacherId}")
+    public Result<List<HomeworkRequestDto>> getLastestWeekHomeworkRequestsByTeacherId(@PathVariable String teacherId){
         return Result.success(homeworkRequestService.getLastestWeekHWRByTeacherId(teacherId));
+    }
+
+    @GetMapping("allHomeworkRequestByTeacher/{teacherId}")
+    public Result<List<HomeworkRequestDto>> getAllHomeworkRequestByTeacherId(@PathVariable String teacherId){
+        return Result.success(homeworkRequestService.getAllHWRByTeacherId(teacherId));
+    }
+
+    @GetMapping("lastestWeekHomeworkRequestByClass/{classId}")
+    public Result<List<HomeworkRequestDto>> getLastestWeekHomeworkRequestByClassId(@PathVariable Integer classId){
+        return Result.success(homeworkRequestService.getLastestWeekHWRByClassId(classId));
+    }
+
+    @GetMapping("allHomeworkRequestByClass/{classId}")
+    public Result<List<HomeworkRequestDto>> getAllHomeworkRequestByClassId(@PathVariable Integer classId){
+        return Result.success(homeworkRequestService.getAllHWRByClassId(classId));
     }
 
 }
