@@ -14,7 +14,7 @@ public class SimHashUtil {
 
     private static int hashbits = 64;
 
-    public static BigInteger simHash(String tokens) throws IOException {
+    public static String simHash(String tokens) throws IOException {
         // 定义特征向量/数组
         int[] v = new int[hashbits];
         // 英文分词
@@ -50,14 +50,16 @@ public class SimHashUtil {
             }
         }
 
-        BigInteger fingerprint = new BigInteger("0");
+        StringBuffer strSimHash = new StringBuffer();
         for (int i = 0; i < hashbits; i++) {
             // 4、最后对数组进行判断,大于0的记为1,小于等于0的记为0,得到一个 64bit 的数字指纹/签名.
             if (v[i] >= 0) {
-                fingerprint = fingerprint.add(new BigInteger("1").shiftLeft(i));
+                strSimHash.append("1");
+            }else{
+                strSimHash.append("0");
             }
         }
-        return fingerprint;
+        return strSimHash.toString();
     }
 
     private static BigInteger hash(String source) {
@@ -98,7 +100,7 @@ public class SimHashUtil {
     /**
      * 将hashbits位的指纹分为（distance+1）块
      */
-    public static List subByDistance(BigInteger intSimHash, int distance) {
+    public static List subByDistance(String strSimHash, int distance) {
         // 分成几组来检查
         int numEach = hashbits / (distance + 1);
         List characters = new ArrayList();
@@ -106,9 +108,9 @@ public class SimHashUtil {
         StringBuffer buffer = new StringBuffer();
 
         int k = 0;
-        for (int i = 0; i < intSimHash.bitLength(); i++) {
+        for (int i = 0; i < strSimHash.length(); i++) {
             // 当且仅当设置了指定的位时，返回 true
-            boolean sr = intSimHash.testBit(i);
+            boolean sr = strSimHash.charAt(i) == '1';
 
             if (sr) {
                 buffer.append("1");

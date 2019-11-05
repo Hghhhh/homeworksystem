@@ -4,6 +4,7 @@ import com.hgh.homeworksystem.dao.HomeworkDao;
 import com.hgh.homeworksystem.entity.Homework;
 import com.hgh.homeworksystem.entity.HomeworkRequest;
 import com.hgh.homeworksystem.service.HomeworkService;
+import com.hgh.homeworksystem.util.SimHashUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,6 +57,12 @@ public class HomeworkServiceImpl implements HomeworkService {
             Homework homework1 = homeworkDao.findById(homework.getId()).orElse(null);
             dealNullValue(homework,homework1);
             homework = homework1;
+        }
+        try {
+            //设置simhash
+            homework.setSimhash(SimHashUtil.simHash(homework.getContent()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         homeworkDao.save(homework);
     }

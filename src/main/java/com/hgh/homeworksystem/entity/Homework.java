@@ -34,6 +34,9 @@ public class Homework {
 
     private Integer updateTime;
 
+    @Column(columnDefinition = "char")
+    private String simhash;
+
 }
 
 

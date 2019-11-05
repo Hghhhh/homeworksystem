@@ -1,6 +1,6 @@
 /*
-SQLyog Ultimate v12.09 (64 bit)
-MySQL - 5.7.19-log : Database - homework_system
+SQLyog Enterprise v12.09 (64 bit)
+MySQL - 5.7.26-log : Database - homework_system
 *********************************************************************
 */
 
@@ -36,9 +36,11 @@ CREATE TABLE `tb_class` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL COMMENT '班级名',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_class` */
+
+insert  into `tb_class`(`id`,`name`) values (1,'21');
 
 /*Table structure for table `tb_homework` */
 
@@ -54,6 +56,7 @@ CREATE TABLE `tb_homework` (
   `state` tinyint(4) DEFAULT NULL COMMENT '0 待提交，1 待批改 ，2 已批改',
   `createTime` int(11) NOT NULL,
   `updateTime` int(11) NOT NULL,
+  `simhash` char(64) DEFAULT NULL COMMENT 'hash串',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -80,7 +83,7 @@ CREATE TABLE `tb_homework_request` (
 
 /*Data for the table `tb_homework_request` */
 
-insert  into `tb_homework_request`(`id`,`title`,`content`,`classId`,`format`,`enclosure`,`teacherId`,`deadline`,`updateTime`,`createTime`,`state`) values (1,'hhhh','web',1,'md',NULL,'1',123213,123,123,0);
+insert  into `tb_homework_request`(`id`,`title`,`content`,`classId`,`format`,`enclosure`,`teacherId`,`deadline`,`updateTime`,`createTime`,`state`) values (1,'aaaa','web',1,'md',NULL,'1',1572923719,1572923719,1572923719,0);
 
 /*Table structure for table `tb_teacher_class` */
 
@@ -107,6 +110,8 @@ CREATE TABLE `tb_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `tb_user` */
+
+insert  into `tb_user`(`account`,`password`,`state`,`classId`) values ('1','11',0,1);
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
