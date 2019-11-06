@@ -59,8 +59,10 @@ public class HomeworkServiceImpl implements HomeworkService {
             homework = homework1;
         }
         try {
-            //设置simhash
-            homework.setSimhash(SimHashUtil.simHash(homework.getContent()));
+            if(homework.getContent()!=null) {
+                //设置simhash
+                homework.setSimhash(SimHashUtil.simHash(homework.getContent()));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
