@@ -1,6 +1,7 @@
 package com.hgh.homeworksystem.service;
 
 import com.hgh.homeworksystem.dto.HomeworkRequestDto;
+import com.hgh.homeworksystem.dto.HomeworkRequestForStudentDto;
 import com.hgh.homeworksystem.entity.HomeworkRequest;
 
 import java.util.List;
@@ -15,9 +16,12 @@ public interface HomeworkRequestService {
 
     List<HomeworkRequestDto> getAllHWRByTeacherId(String teacherId);
 
-    List<HomeworkRequestDto> getLastestWeekHWRByClassId(Integer classId);
+    List<HomeworkRequestForStudentDto> getLastestWeekHWRByClassId(Integer classId, String studentId);
 
-    List<HomeworkRequestDto> getAllHWRByClassId(Integer classId);
+    List<HomeworkRequestForStudentDto> getAllHWRByClassId(Integer classId, String studentId);
 
+    List<HomeworkRequest> getByStateAndDeadLine();
+
+    void saveAll(List<HomeworkRequest> homeworkRequests);
 
 }

@@ -1,10 +1,14 @@
 package com.hgh.homeworksystem.service.impl;
 
 import com.hgh.homeworksystem.dao.ClassDao;
+import com.hgh.homeworksystem.dao.HomeworkDao;
 import com.hgh.homeworksystem.dao.HomeworkRequestDao;
 import com.hgh.homeworksystem.dao.UserDao;
 import com.hgh.homeworksystem.dto.HomeworkRequestDto;
+import com.hgh.homeworksystem.dto.HomeworkRequestForStudentDto;
+import com.hgh.homeworksystem.dto.UserDto;
 import com.hgh.homeworksystem.entity.Class;
+import com.hgh.homeworksystem.entity.Homework;
 import com.hgh.homeworksystem.entity.HomeworkRequest;
 import com.hgh.homeworksystem.entity.User;
 import com.hgh.homeworksystem.service.HomeworkRequestService;
@@ -29,6 +33,9 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private HomeworkDao homeworkDao;
 
     /**
      * 获取对象的空属性
@@ -61,7 +68,7 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
 
     @Override
     public void save(HomeworkRequest homeworkRequest) {
-        if(homeworkRequest.getId()!=null || homeworkRequest.getId() != 0){
+        if(homeworkRequest.getId()!=null && homeworkRequest.getId() != 0){
             HomeworkRequest homeworkRequest1 = homeworkRequestDao.findById(homeworkRequest.getId()).orElse(null);
             dealNullValue(homeworkRequest,homeworkRequest1);
             homeworkRequest = homeworkRequest1;
@@ -79,6 +86,7 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
             Class cla = classDao.findById(homeworkRequest.getClassId()).orElse(null);
             homeworkRequestDto.setBelongClass(cla);
             User teacher = userDao.findById(homeworkRequest.getTeacherId()).orElse(null);
+            teacher.setPassword(null);
             homeworkRequestDto.setTeacher(teacher);
             return homeworkRequestDto;
         }
@@ -96,7 +104,14 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
             Class cla = classDao.findById(a.getClassId()).orElse(null);
             homeworkRequestDto.setBelongClass(cla);
             User teacher = userDao.findById(a.getTeacherId()).orElse(null);
+            teacher.setPassword(null);
             homeworkRequestDto.setTeacher(teacher);
+            Integer studentNum = userDao.countByClassId(a.getClassId());
+            Integer submitedNum = homeworkDao.countByRequestIdAndState(a.getId(),1);
+            Integer checkedNum = homeworkDao.countByRequestIdAndState(a.getId(),2);
+            homeworkRequestDto.setStudentNum(studentNum);
+            homeworkRequestDto.setCheckedNum(checkedNum);
+            homeworkRequestDto.setSubmitedNum(submitedNum + checkedNum);
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;
@@ -111,39 +126,62 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
             Class cla = classDao.findById(a.getClassId()).orElse(null);
             homeworkRequestDto.setBelongClass(cla);
             User teacher = userDao.findById(a.getTeacherId()).orElse(null);
+            teacher.setPassword(null);
             homeworkRequestDto.setTeacher(teacher);
+            Integer studentNum = userDao.countByClassId(a.getClassId());
+            Integer submitedNum = homeworkDao.countByRequestIdAndState(a.getId(),1);
+            Integer checkedNum = homeworkDao.countByRequestIdAndState(a.getId(),2);
+            homeworkRequestDto.setStudentNum(studentNum);
+            homeworkRequestDto.setCheckedNum(checkedNum);
+            homeworkRequestDto.setSubmitedNum(submitedNum + checkedNum);
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;
     }
 
     @Override
-    public List<HomeworkRequestDto> getAllHWRByClassId(Integer classId) {
+    public List<HomeworkRequestForStudentDto> getAllHWRByClassId(Integer classId, String studentId) {
         List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdOrderByCreateTimeDesc(classId);
-        List<HomeworkRequestDto> homeworkRequestDtos = new ArrayList<>();
+        List<HomeworkRequestForStudentDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
-            HomeworkRequestDto homeworkRequestDto = new HomeworkRequestDto(a);
-            Class cla = classDao.findById(a.getClassId()).orElse(null);
-            homeworkRequestDto.setBelongClass(cla);
-            User teacher = userDao.findById(a.getTeacherId()).orElse(null);
-            homeworkRequestDto.setTeacher(teacher);
+            HomeworkRequestForStudentDto homeworkRequestDto = new HomeworkRequestForStudentDto();
+            homeworkRequestDto.setRequestId(a.getId());
+            homeworkRequestDto.setTitle(a.getTitle());
+            Homework homework = homeworkDao.findByRequestIdAndStudentId(a.getId(),studentId);
+            homeworkRequestDto.setGrade(homework.getGrade());
+            homeworkRequestDto.setState(homework.getState());
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;
     }
 
     @Override
-    public List<HomeworkRequestDto> getLastestWeekHWRByClassId(Integer classId) {
+    public List<HomeworkRequest> getByStateAndDeadLine() {
+        Integer time = TimeUtil.getUnixTime();
+        return homeworkRequestDao.findByStateAndDeadlineLessThan(0,time);
+    }
+
+    @Override
+    public void saveAll(List<HomeworkRequest> homeworkRequests) {
+        Iterator<HomeworkRequest> homeworkRequestIterator = homeworkRequests.iterator();
+        for(HomeworkRequest homeworkRequest : homeworkRequests){
+            homeworkRequestDao.save(homeworkRequest);
+        }
+    }
+
+    @Override
+    public List<HomeworkRequestForStudentDto> getLastestWeekHWRByClassId(Integer classId, String studentId) {
         Integer beginUnixTime = TimeUtil.getBeginUnixTimeOfWeek();
         Integer endUnixTime = TimeUtil.getEndUnixTimeOfWeek();
         List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdAndCreateTimeBetween(classId,beginUnixTime,endUnixTime);
-        List<HomeworkRequestDto> homeworkRequestDtos = new ArrayList<>();
+        List<HomeworkRequestForStudentDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
-            HomeworkRequestDto homeworkRequestDto = new HomeworkRequestDto(a);
-            Class cla = classDao.findById(a.getClassId()).orElse(null);
-            homeworkRequestDto.setBelongClass(cla);
-            User teacher = userDao.findById(a.getTeacherId()).orElse(null);
-            homeworkRequestDto.setTeacher(teacher);
+            HomeworkRequestForStudentDto homeworkRequestDto = new HomeworkRequestForStudentDto();
+            homeworkRequestDto.setRequestId(a.getId());
+            homeworkRequestDto.setTitle(a.getTitle());
+            Homework homework = homeworkDao.findByRequestIdAndStudentId(a.getId(),studentId);
+            homeworkRequestDto.setGrade(homework.getGrade());
+            homeworkRequestDto.setState(homework.getState());
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;

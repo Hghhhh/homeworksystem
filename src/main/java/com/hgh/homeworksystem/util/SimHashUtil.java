@@ -100,10 +100,10 @@ public class SimHashUtil {
     /**
      * 将hashbits位的指纹分为（distance+1）块
      */
-    public static List subByDistance(String strSimHash, int distance) {
+    public static List<BigInteger> subByDistance(String strSimHash, int distance) {
         // 分成几组来检查
         int numEach = hashbits / (distance + 1);
-        List characters = new ArrayList();
+        List<BigInteger> characters = new ArrayList<>();
 
         StringBuffer buffer = new StringBuffer();
 

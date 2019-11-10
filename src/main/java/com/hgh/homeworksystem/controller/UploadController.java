@@ -21,11 +21,6 @@ public class UploadController {
 
     private static final String FILE_PATH = "G:/file/";
 
-    @GetMapping("/upload")
-    public String upload() {
-        return "upload";
-    }
-
     @PostMapping("/upload")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -33,7 +28,7 @@ public class UploadController {
         }
 
         String fileName = file.getOriginalFilename();
-        String filePathPre = FileNameUtil.generateFileName();
+        String filePathPre = FileNameUtil.generateFileName() + "-";
         File dest = new File(FILE_PATH + filePathPre + fileName);
         try {
             file.transferTo(dest);

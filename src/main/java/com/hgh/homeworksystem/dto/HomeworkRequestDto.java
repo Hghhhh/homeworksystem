@@ -44,5 +44,10 @@ public class HomeworkRequestDto {
 
     private Integer state;
 
+    private Integer studentNum;
+
+    private Integer submitedNum;
+
+    private Integer checkedNum;
 
 }

@@ -1,3 +1,4 @@
+
 spring:
   devtools:
     restart:
@@ -31,3 +32,5 @@ spring:
                 max-active: 8
                 max-wait: 5000s
           timeout: 5000s
+server:
+  port: 9090

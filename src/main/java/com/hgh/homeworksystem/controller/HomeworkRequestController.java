@@ -1,11 +1,9 @@
 package com.hgh.homeworksystem.controller;
 
-import com.hgh.homeworksystem.dto.HomeworkRequestDto;
-import com.hgh.homeworksystem.dto.Result;
+import com.hgh.homeworksystem.dto.*;
 import com.hgh.homeworksystem.entity.HomeworkRequest;
 import com.hgh.homeworksystem.service.HomeworkRequestService;
 import com.hgh.homeworksystem.util.JsonUtil;
-import com.hgh.homeworksystem.util.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,10 +18,18 @@ public class HomeworkRequestController {
     @Autowired
     private HomeworkRequestService homeworkRequestService;
 
-    @PostMapping("publishHomeworkRequest")
-    public Result<Void> publishOrUpdateHomeworkRequest(@RequestBody String homeworkReq){
-        HomeworkRequest homeworkRequest = JsonUtil.parseJsonWithGson(homeworkReq,HomeworkRequest.class);
-        homeworkRequestService.save(homeworkRequest);
+    @PostMapping("homeworkRequest")
+    public Result<Void> publishOrUpdateHomeworkRequest(@RequestBody String homeworkSaveDto){
+        HomeworkRequestSaveDto homeworkRequestDto = JsonUtil.parseJsonWithGson(homeworkSaveDto,HomeworkRequestSaveDto.class);
+        HomeworkRequest homeworkRequest = new HomeworkRequest(homeworkRequestDto);
+        if(homeworkRequestDto.getClassIds() == null){
+            homeworkRequestService.save(homeworkRequest);
+        }else{
+            for(Integer classId : homeworkRequestDto.getClassIds()){
+                homeworkRequest.setClassId(classId);
+                homeworkRequestService.save(homeworkRequest);
+            }
+        }
         return Result.success(null);
     }
 
@@ -33,24 +39,30 @@ public class HomeworkRequestController {
         return Result.success(homeworkRequestDto);
     }
 
-    @GetMapping("lastestWeekHomeworkRequestByTeacher/{teacherId}")
-    public Result<List<HomeworkRequestDto>> getLastestWeekHomeworkRequestsByTeacherId(@PathVariable String teacherId){
-        return Result.success(homeworkRequestService.getLastestWeekHWRByTeacherId(teacherId));
+    @GetMapping("homeworkRequestByTeacher")
+    public Result<List<HomeworkRequestDto>> getLastestWeekHomeworkRequestsByTeacherId(@RequestParam String teacherId,@RequestParam Integer isLastWeek){
+        List<HomeworkRequestDto> homeworkRequestDtos = null;
+        if(isLastWeek.equals(0)){
+            homeworkRequestDtos = homeworkRequestService.getAllHWRByTeacherId(teacherId);
+        }else if(isLastWeek.equals(1)){
+            homeworkRequestDtos = homeworkRequestService.getLastestWeekHWRByTeacherId(teacherId);
+        }else{
+            return Result.error(CodeMsg.PARAM_ERROR);
+        }
+        return Result.success(homeworkRequestDtos);
     }
 
-    @GetMapping("allHomeworkRequestByTeacher/{teacherId}")
-    public Result<List<HomeworkRequestDto>> getAllHomeworkRequestByTeacherId(@PathVariable String teacherId){
-        return Result.success(homeworkRequestService.getAllHWRByTeacherId(teacherId));
-    }
-
-    @GetMapping("lastestWeekHomeworkRequestByClass/{classId}")
-    public Result<List<HomeworkRequestDto>> getLastestWeekHomeworkRequestByClassId(@PathVariable Integer classId){
-        return Result.success(homeworkRequestService.getLastestWeekHWRByClassId(classId));
-    }
-
-    @GetMapping("allHomeworkRequestByClass/{classId}")
-    public Result<List<HomeworkRequestDto>> getAllHomeworkRequestByClassId(@PathVariable Integer classId){
-        return Result.success(homeworkRequestService.getAllHWRByClassId(classId));
+    @GetMapping("homeworkRequestByClass")
+    public Result<List<HomeworkRequestForStudentDto>> getLastestWeekHomeworkRequestByClassId(@RequestParam Integer classId, @RequestParam Integer isLastWeek, @RequestParam String studentId){
+        List<HomeworkRequestForStudentDto> homeworkRequestDtos = null;
+        if(isLastWeek.equals(0)){
+            homeworkRequestDtos = homeworkRequestService.getAllHWRByClassId(classId, studentId);
+        }else if(isLastWeek.equals(1)){
+            homeworkRequestDtos = homeworkRequestService.getLastestWeekHWRByClassId(classId, studentId);
+        }else{
+            return Result.error(CodeMsg.PARAM_ERROR);
+        }
+        return Result.success(homeworkRequestDtos);
     }
 
 }

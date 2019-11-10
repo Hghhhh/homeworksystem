@@ -37,6 +37,11 @@ public class Homework {
     @Column(columnDefinition = "char")
     private String simhash;
 
+    /**
+     * 备注
+     */
+    private String remarks;
+
 }
 
 

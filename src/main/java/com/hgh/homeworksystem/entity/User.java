@@ -25,4 +25,6 @@ public class User {
     private Integer state;
 
     private Integer classId;
+
+    private String name;
 }
