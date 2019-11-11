@@ -13,4 +13,6 @@ public class HomeworkRequestForStudentDto {
 
     private Integer state;
 
+    private Integer deadline;
+
 }

@@ -28,6 +28,8 @@ public class HomeworkDto {
 
     private Integer updateTime;
 
+    private String remarks;
+
     public HomeworkDto(){}
 
     public HomeworkDto(Homework homework){
@@ -39,6 +41,7 @@ public class HomeworkDto {
         this.setState(homework.getState());
         this.setUpdateTime(homework.getUpdateTime());
         this.setRequestId(homework.getRequestId());
+        this.setRemarks(homework.getRemarks());
     }
 
 }

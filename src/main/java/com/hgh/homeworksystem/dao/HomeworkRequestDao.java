@@ -8,13 +8,13 @@ import java.util.List;
 public interface HomeworkRequestDao extends JpaRepository<HomeworkRequest, Integer>{
 
 
-    List<HomeworkRequest> findByTeacherIdAndCreateTimeBetween(String teacher,Integer begin,Integer end);
+    List<HomeworkRequest> findByTeacherIdAndCreateTimeBetweenOrderByCreateTime(String teacher,Integer begin,Integer end);
 
-    List<HomeworkRequest> findByTeacherIdOrderByCreateTimeDesc(String teacher);
+    List<HomeworkRequest> findByTeacherIdAndCreateTimeGreaterThanOrderByCreateTimeDesc(String teacher, Integer time);
 
-    List<HomeworkRequest> findByClassIdAndCreateTimeBetween(Integer classId, Integer begin,Integer end);
+    List<HomeworkRequest> findByClassIdAndCreateTimeBetweenOrderByCreateTimeDesc(Integer classId, Integer begin,Integer end);
 
-    List<HomeworkRequest> findByClassIdOrderByCreateTimeDesc(Integer classId);
+    List<HomeworkRequest> findByClassIdAndCreateTimeGreaterThanOrderByCreateTimeDesc(Integer classId, Integer time);
 
     List<HomeworkRequest> findByStateAndDeadlineLessThan(Integer state, Integer time);
 

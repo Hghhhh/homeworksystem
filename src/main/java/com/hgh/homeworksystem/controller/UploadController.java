@@ -19,7 +19,7 @@ import java.util.List;
 public class UploadController {
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadController.class);
 
-    private static final String FILE_PATH = "G:/file/";
+    private static final String FILE_PATH = "C:/file/";
 
     @PostMapping("/upload")
     public Result<String> upload(@RequestParam("file") MultipartFile file) {

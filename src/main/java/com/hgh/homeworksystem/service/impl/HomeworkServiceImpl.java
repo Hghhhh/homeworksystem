@@ -105,6 +105,9 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public TeacherHomeworkDto getDtoByRequestId(Integer requestId) {
         List<Homework> homeworks = homeworkDao.findByRequestId(requestId);
+        if(homeworks == null || homeworks.isEmpty()){
+            return new TeacherHomeworkDto();
+        }
         List<HomeworkDto> homeworkDtos = new ArrayList<>(homeworks.size());
         List<HomeworkDto> simHomeworkDtos = null;
         String[] simhHomeworks = null;
@@ -143,7 +146,9 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public HomeworkForStudentDto getByRequestIdAndStudent(Integer requestId, String student) {
         Homework homework = homeworkDao.findByRequestIdAndStudentId(requestId,student);
-        homework.setSimhash(null);
+        if(homework!=null){
+            homework.setSimhash(null);
+        }
         HomeworkRequest homeworkRequest = homeworkRequestDao.getOne(requestId);
         HomeworkRequestDto homeworkRequestDto = new HomeworkRequestDto(homeworkRequest);
         User teacher = userService.findByAccount(homeworkRequest.getTeacherId());

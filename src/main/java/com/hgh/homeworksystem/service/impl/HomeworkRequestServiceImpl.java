@@ -97,7 +97,7 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
         Integer beginUnixTime = TimeUtil.getBeginUnixTimeOfWeek();
         Integer endUnixTime = TimeUtil.getEndUnixTimeOfWeek();
 
-        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByTeacherIdAndCreateTimeBetween(teacherId,beginUnixTime,endUnixTime);
+        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByTeacherIdAndCreateTimeBetweenOrderByCreateTime(teacherId,beginUnixTime,endUnixTime);
         List<HomeworkRequestDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
             HomeworkRequestDto homeworkRequestDto = new HomeworkRequestDto(a);
@@ -119,7 +119,7 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
 
     @Override
     public List<HomeworkRequestDto> getAllHWRByTeacherId(String teacherId) {
-        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByTeacherIdOrderByCreateTimeDesc(teacherId);
+        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByTeacherIdAndCreateTimeGreaterThanOrderByCreateTimeDesc(teacherId, TimeUtil.getBeginUnixTimeOfWeek());
         List<HomeworkRequestDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
             HomeworkRequestDto homeworkRequestDto = new HomeworkRequestDto(a);
@@ -141,15 +141,19 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
 
     @Override
     public List<HomeworkRequestForStudentDto> getAllHWRByClassId(Integer classId, String studentId) {
-        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdOrderByCreateTimeDesc(classId);
+        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdAndCreateTimeGreaterThanOrderByCreateTimeDesc(classId, TimeUtil.getBeginUnixTimeOfWeek());
         List<HomeworkRequestForStudentDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
             HomeworkRequestForStudentDto homeworkRequestDto = new HomeworkRequestForStudentDto();
             homeworkRequestDto.setRequestId(a.getId());
             homeworkRequestDto.setTitle(a.getTitle());
             Homework homework = homeworkDao.findByRequestIdAndStudentId(a.getId(),studentId);
-            homeworkRequestDto.setGrade(homework.getGrade());
-            homeworkRequestDto.setState(homework.getState());
+            homeworkRequestDto.setDeadline(a.getDeadline());
+            homeworkRequestDto.setState(0);
+            if(homework != null){
+                homeworkRequestDto.setGrade(homework.getGrade());
+                homeworkRequestDto.setState(homework.getState());
+            }
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;
@@ -163,7 +167,6 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
 
     @Override
     public void saveAll(List<HomeworkRequest> homeworkRequests) {
-        Iterator<HomeworkRequest> homeworkRequestIterator = homeworkRequests.iterator();
         for(HomeworkRequest homeworkRequest : homeworkRequests){
             homeworkRequestDao.save(homeworkRequest);
         }
@@ -173,15 +176,19 @@ public class HomeworkRequestServiceImpl implements HomeworkRequestService{
     public List<HomeworkRequestForStudentDto> getLastestWeekHWRByClassId(Integer classId, String studentId) {
         Integer beginUnixTime = TimeUtil.getBeginUnixTimeOfWeek();
         Integer endUnixTime = TimeUtil.getEndUnixTimeOfWeek();
-        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdAndCreateTimeBetween(classId,beginUnixTime,endUnixTime);
+        List<HomeworkRequest> homeworkRequests = homeworkRequestDao.findByClassIdAndCreateTimeBetweenOrderByCreateTimeDesc(classId,beginUnixTime,endUnixTime);
         List<HomeworkRequestForStudentDto> homeworkRequestDtos = new ArrayList<>();
         homeworkRequests.forEach(a->{
             HomeworkRequestForStudentDto homeworkRequestDto = new HomeworkRequestForStudentDto();
             homeworkRequestDto.setRequestId(a.getId());
             homeworkRequestDto.setTitle(a.getTitle());
             Homework homework = homeworkDao.findByRequestIdAndStudentId(a.getId(),studentId);
-            homeworkRequestDto.setGrade(homework.getGrade());
-            homeworkRequestDto.setState(homework.getState());
+            homeworkRequestDto.setDeadline(a.getDeadline());
+            homeworkRequestDto.setState(0);
+            if(homework != null){
+                homeworkRequestDto.setGrade(homework.getGrade());
+                homeworkRequestDto.setState(homework.getState());
+            }
             homeworkRequestDtos.add(homeworkRequestDto);
         });
         return homeworkRequestDtos;
