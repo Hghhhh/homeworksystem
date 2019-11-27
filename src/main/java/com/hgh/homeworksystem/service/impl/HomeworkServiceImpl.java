@@ -140,6 +140,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public List<Homework> getByRequestId(Integer requestId) {
         List<Homework> homeworks = homeworkDao.findByRequestId(requestId);
+
         return homeworks;
     }
 

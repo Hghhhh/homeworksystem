@@ -5,6 +5,7 @@ import com.hgh.homeworksystem.entity.Homework;
 import com.hgh.homeworksystem.entity.HomeworkRequest;
 import com.hgh.homeworksystem.service.HomeworkRequestService;
 import com.hgh.homeworksystem.service.HomeworkService;
+import com.hgh.homeworksystem.service.UserService;
 import com.hgh.homeworksystem.util.JsonUtil;
 import com.hgh.homeworksystem.util.SimHashUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -23,7 +25,10 @@ public class HomeworkController {
     @Autowired
     private HomeworkRequestService homeworkRequestService;
 
-    private static final int DIFF = 10;
+    @Autowired
+    private UserService userService;
+
+    private static final int DIFF = 5;
 
     @PostMapping("homework")
     public Result<Void> postHomework(@RequestBody String homeworkStr){
@@ -59,6 +64,7 @@ public class HomeworkController {
         HomeworkRequestDto homeworkRequest = homeworkRequestService.getHomeworkRequestById(requestId);
         homeworkRequest.setState(1);
         List<HomeworkDto> simHomeworks = new ArrayList<>();
+        HashSet<Integer> simHomeworkId = new HashSet<>();
         List<Homework> homeworks = homeworkService.getByRequestId(homeworkRequest.getId());
         if(homeworks == null || homeworks.isEmpty()){
             return Result.success(simHomeworks);
@@ -68,8 +74,19 @@ public class HomeworkController {
                 List<BigInteger> list1 = SimHashUtil.subByDistance(homeworks.get(i).getSimhash(),DIFF);
                 List<BigInteger> list2 = SimHashUtil.subByDistance(homeworks.get(j).getSimhash(),DIFF);
                 if(isSimilar(list1,list2)){
-                    simHomeworks.add(new HomeworkDto(homeworks.get(i)));
-                    simHomeworks.add(new HomeworkDto(homeworks.get(j)));
+                    if(!simHomeworkId.contains(homeworks.get(i).getId())){
+                        HomeworkDto homeworkDto = new HomeworkDto(homeworks.get(i));
+                        homeworkDto.setStudent(userService.findByAccount(homeworks.get(i).getStudentId()));
+                        simHomeworks.add(homeworkDto);
+                        simHomeworkId.add(homeworks.get(i).getId());
+                    }
+                    if(!simHomeworkId.contains(homeworks.get(j).getId())){
+                        HomeworkDto homeworkDto2 = new HomeworkDto(homeworks.get(j));
+                        homeworkDto2.setStudent(userService.findByAccount(homeworks.get(j).getStudentId()));
+                        simHomeworks.add(homeworkDto2);
+                        simHomeworkId.add(homeworks.get(j).getId());
+                    }
+
                 }
             }
         }

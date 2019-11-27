@@ -23,7 +23,7 @@ public class HomeworkScheduler {
     @Autowired
     private HomeworkRequestService homeworkRequestService;
 
-    private static final int DIFF = 10;
+    private static final int DIFF = 5;
 
     @Scheduled(cron = "0 0/5 * * * ?")
     private void homeworkJob(){
@@ -35,13 +35,20 @@ public class HomeworkScheduler {
                 continue;
             }
             StringBuilder simHomeworkIds = new StringBuilder();
+            HashSet<Integer> simHomeworkId = new HashSet<>();
             for(int i=0; i<homeworks.size()-1; i++){
                 for(int j=i+1;j<homeworks.size(); j++){
                     List<BigInteger> list1 = SimHashUtil.subByDistance(homeworks.get(i).getSimhash(),DIFF);
                     List<BigInteger> list2 = SimHashUtil.subByDistance(homeworks.get(j).getSimhash(),DIFF);
                     if(isSimilar(list1,list2)){
-                        simHomeworkIds.append(homeworks.get(i).getId()+",");
-                        simHomeworkIds.append(homeworks.get(j).getId()+",");
+                        if(!simHomeworkId.contains(homeworks.get(i).getId())){
+                            simHomeworkIds.append(homeworks.get(i).getId()+",");
+                            simHomeworkId.add(homeworks.get(i).getId());
+                        }
+                        if(!simHomeworkId.contains(homeworks.get(j).getId())){
+                            simHomeworkIds.append(homeworks.get(j).getId()+",");
+                            simHomeworkId.add(homeworks.get(j).getId());
+                        }
                     }
                 }
             }
