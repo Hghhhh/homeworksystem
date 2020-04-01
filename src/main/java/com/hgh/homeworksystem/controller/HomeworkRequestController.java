@@ -27,6 +27,7 @@ public class HomeworkRequestController {
         }else{
             for(Integer classId : homeworkRequestDto.getClassIds()){
                 homeworkRequest.setClassId(classId);
+                homeworkRequest.setId(null);
                 homeworkRequestService.save(homeworkRequest);
             }
         }
